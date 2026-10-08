@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tp2-db
+    environment:
+      POSTGRES_DB: tp2
+      POSTGRES_USER: tp2
+      POSTGRES_PASSWORD: tp2
+    ports:
+      - "5433:5432"   # 5433 côté Mac pour ne pas entrer en conflit avec le PostgreSQL Homebrew (5432)
+    volumes:
+      - tp2-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tp2 -d tp2"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    container_name: tp2-api
+    depends_on:
+      db:
+        condition: service_healthy   # l'API démarre seulement quand la base est prête
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/tp2
+      DB_USERNAME: tp2
+      DB_PASSWORD: tp2
+    ports:
+      - "8080:8080"
+
+volumes:
+  tp2-data:

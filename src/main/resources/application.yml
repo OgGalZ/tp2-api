@@ -1,0 +1,49 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: tp2-api
+  datasource:
+    # Par défaut : PostgreSQL local (Homebrew) avec ton utilisateur macOS, sans mot de passe.
+    # En Docker, ces valeurs sont surchargées par les variables d'environnement.
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/tp2}
+    username: ${DB_USERNAME:${USER:postgres}}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  cache:
+    type: caffeine
+    cache-names: exchangeRates
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=10m
+
+app:
+  jwt:
+    # Clé HMAC-SHA en Base64 (>= 256 bits). À surcharger via JWT_SECRET en production.
+    secret: ${JWT_SECRET:hz+q7483Ors+8WT9tAdFAcK0wdmIQaKEEedkzCvezChAHAi5JTNGJqlGdagkkV2R}
+    access-token-expiration-ms: 900000      # 15 minutes
+    refresh-token-expiration-ms: 604800000  # 7 jours
+  exchange:
+    base-url: ${EXCHANGE_API_URL:https://api.frankfurter.dev/v1}
+    timeout-ms: 3000
+  rate-limit:
+    capacity: 20          # requêtes autorisées...
+    period-seconds: 60    # ...par fenêtre de 60 s et par adresse IP
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    fr.efrei.tp2: INFO
