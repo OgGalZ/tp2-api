@@ -19,6 +19,7 @@ CREATE TABLE exchange_rates (
     rate            NUMERIC(19, 8) NOT NULL,
     updated_at      TIMESTAMP(6)   NOT NULL,
     CONSTRAINT uk_exchange_rates_pair UNIQUE (base_currency, target_currency)
+
 );
 
 CREATE TABLE currency_transactions (
